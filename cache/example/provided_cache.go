@@ -6,18 +6,18 @@ import (
 
 	"github.com/jsdidierlaurent/echo-middleware/cache"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	emw "github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	r := echo.New()
-	r.Use(middleware.Logger())
+	r.Use(emw.Logger())
 
-	config := cache.Config{
+	config := cache.ProvidedCacheConfig{
 		Store: cache.NewInMemoryStore(time.Second*5, time.Second),
 	}
 
-	r.Use(cache.ManualCacheWithConfig(config))
+	r.Use(cache.ProvidedCacheWithConfig(config))
 
 	r.GET("/ping", func(c echo.Context) error {
 		store := c.Get(cache.DefaultCacheContextKey).(*cache.InMemoryStore)
@@ -29,10 +29,10 @@ func main() {
 			c.Response().Header().Set("Cache-Control", "max-age=5")
 			return c.String(http.StatusOK, cachedValue)
 		} else {
-			c.Logger().Errorf("Enable to store value in cache %s\n", err)
+			c.Logger().Errorf("Enable to get value in cache %s\n", err)
 		}
 
-		// Awsome value
+		// Awesome value
 		value := "pong"
 
 		err := store.Add(key, value, cache.DEFAULT)
