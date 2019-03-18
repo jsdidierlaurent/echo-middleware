@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	DefaultCacheContextKey     = "jsdidierlaurent.echo-middleware.cache"
-	DefaultResponseCachePrefix = "jsdidierlaurent.echo-middleware.response.cache"
+	DefaultStoreContextKey = "jsdidierlaurent.echo-middleware.store"
+	DefaultCachePrefix     = "jsdidierlaurent.echo-middleware.cache"
 
 	//DEFAULT Duration use Duration passed in Store constructor
 	DEFAULT = time.Duration(0)
@@ -23,8 +23,8 @@ const (
 )
 
 type (
-	//ProvidedCacheConfig Struct for Configure ProvidedCache
-	ProvidedCacheConfig struct {
+	//StoreMiddlewareConfig Struct for Configure StoreMiddleware
+	StoreMiddlewareConfig struct {
 		//Store defines which type of cache you use (Default: inmemory).
 		Store Store
 
@@ -32,8 +32,8 @@ type (
 		ContextKey string
 	}
 
-	//ResponseCacheConfig Struct for Configure ProvidedCache
-	ResponseCacheConfig struct {
+	//CacheMiddlewareConfig Struct for Configure CacheMiddleware
+	CacheMiddlewareConfig struct {
 		//Store defines which type of cache you use (Default: inmemory).
 		Store Store
 
@@ -65,14 +65,14 @@ var (
 	defaultStore = NewInMemoryStore(time.Minute*10, time.Second*30)
 
 	//DefaultConfig used by default if you don't specifies Config or value inside Config
-	DefaultProvidedCacheConfig = ProvidedCacheConfig{
+	DefaultStoreMiddlewareConfig = StoreMiddlewareConfig{
 		Store:      defaultStore,
-		ContextKey: DefaultCacheContextKey,
+		ContextKey: DefaultStoreContextKey,
 	}
 
-	DefaultResponseCacheConfig = ResponseCacheConfig{
+	DefaultCacheMiddlewareConfig = CacheMiddlewareConfig{
 		Store:     defaultStore,
-		KeyPrefix: DefaultResponseCachePrefix,
+		KeyPrefix: DefaultCachePrefix,
 		Skipper:   emw.DefaultSkipper,
 		Expire:    DEFAULT,
 	}
@@ -82,21 +82,21 @@ var (
 	ErrNotSupport = errors.New("cache: not support")
 )
 
-//ProvidedCache Middleware for provide Store to all route using echo.Context#Set()
+//StoreMiddleware for provide Store to all route using echo.Context#Set()
 // Use echo.Context#Get() with cache.DefaultCacheContextKey for get store in your route
-func ProvidedCache() echo.MiddlewareFunc {
-	return ProvidedCacheWithConfig(DefaultProvidedCacheConfig)
+func StoreMiddleWare() echo.MiddlewareFunc {
+	return StoreMiddlewareWithConfig(DefaultStoreMiddlewareConfig)
 }
 
-//ProvidedCacheWithConfig Middleware for provide Store to all route using echo.Context#Set()
+//StoreMiddlewareWithConfig for provide Store to all route using echo.Context#Set()
 // Use echo.Context#Get() with cache.DefaultCacheContextKey for get store in your route
-func ProvidedCacheWithConfig(config ProvidedCacheConfig) echo.MiddlewareFunc {
+func StoreMiddlewareWithConfig(config StoreMiddlewareConfig) echo.MiddlewareFunc {
 	// Defaults
 	if config.Store == nil {
-		config.Store = DefaultProvidedCacheConfig.Store
+		config.Store = DefaultStoreMiddlewareConfig.Store
 	}
 	if config.ContextKey == "" {
-		config.ContextKey = DefaultProvidedCacheConfig.ContextKey
+		config.ContextKey = DefaultStoreMiddlewareConfig.ContextKey
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -107,27 +107,27 @@ func ProvidedCacheWithConfig(config ProvidedCacheConfig) echo.MiddlewareFunc {
 	}
 }
 
-//ResponseCache Middleware for caching response of all route and return cache if previous call is stored
+//CacheMiddleware for caching response of all route and return cache if previous call is stored
 // Use it in middleware definition
-func ResponseCache() echo.MiddlewareFunc {
-	return ResponseCacheWithConfig(DefaultResponseCacheConfig)
+func CacheMiddleware() echo.MiddlewareFunc {
+	return CacheMiddlewareWithConfig(DefaultCacheMiddlewareConfig)
 }
 
-//ResponseCacheWithConfig Middleware for caching response of all route and return cache if previous call is stored
+//CacheMiddlewareWithConfig for caching response of all route and return cache if previous call is stored
 // Use it in middleware definition
-func ResponseCacheWithConfig(config ResponseCacheConfig) echo.MiddlewareFunc {
+func CacheMiddlewareWithConfig(config CacheMiddlewareConfig) echo.MiddlewareFunc {
 	// Defaults
 	if config.Store == nil {
-		config.Store = DefaultResponseCacheConfig.Store
+		config.Store = DefaultCacheMiddlewareConfig.Store
 	}
 	if config.KeyPrefix == "" {
-		config.KeyPrefix = DefaultResponseCacheConfig.KeyPrefix
+		config.KeyPrefix = DefaultCacheMiddlewareConfig.KeyPrefix
 	}
 	if config.Skipper == nil {
-		config.Skipper = DefaultResponseCacheConfig.Skipper
+		config.Skipper = DefaultCacheMiddlewareConfig.Skipper
 	}
 	if config.Expire == time.Duration(0) {
-		config.Expire = DefaultResponseCacheConfig.Expire
+		config.Expire = DefaultCacheMiddlewareConfig.Expire
 	}
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -158,27 +158,27 @@ func ResponseCacheWithConfig(config ResponseCacheConfig) echo.MiddlewareFunc {
 	}
 }
 
-//ResponseCacheHandler Handle for caching response of one route and return cache if previous call is stored
+//CacheHandler for caching response of one route and return cache if previous call is stored
 // Use it in route definition
-func ResponseCacheHandler(handle echo.HandlerFunc) echo.HandlerFunc {
-	return ResponseCacheHandlerWithConfig(DefaultResponseCacheConfig, handle)
+func CacheHandler(handle echo.HandlerFunc) echo.HandlerFunc {
+	return CacheHandlerWithConfig(DefaultCacheMiddlewareConfig, handle)
 }
 
-//ResponseCacheHandlerWithConfig Handle for caching response of one route and return cache if previous call is stored
+//CacheHandlerWithConfig for caching response of one route and return cache if previous call is stored
 // Use it in route definition
-func ResponseCacheHandlerWithConfig(config ResponseCacheConfig, handle echo.HandlerFunc) echo.HandlerFunc {
+func CacheHandlerWithConfig(config CacheMiddlewareConfig, handle echo.HandlerFunc) echo.HandlerFunc {
 	// Defaults
 	if config.Store == nil {
-		config.Store = DefaultResponseCacheConfig.Store
+		config.Store = DefaultCacheMiddlewareConfig.Store
 	}
 	if config.KeyPrefix == "" {
-		config.KeyPrefix = DefaultResponseCacheConfig.KeyPrefix
+		config.KeyPrefix = DefaultCacheMiddlewareConfig.KeyPrefix
 	}
 	if config.Skipper == nil {
-		config.Skipper = DefaultResponseCacheConfig.Skipper
+		config.Skipper = DefaultCacheMiddlewareConfig.Skipper
 	}
 	if config.Expire == time.Duration(0) {
-		config.Expire = DefaultResponseCacheConfig.Expire
+		config.Expire = DefaultCacheMiddlewareConfig.Expire
 	}
 
 	return func(c echo.Context) error {
@@ -207,6 +207,7 @@ func ResponseCacheHandlerWithConfig(config ResponseCacheConfig, handle echo.Hand
 	}
 }
 
+// getKey build unique key by route with queryParams
 func getKey(prefix string, u string) string {
 	key := url.QueryEscape(u)
 

@@ -13,14 +13,14 @@ func main() {
 	r := echo.New()
 	r.Use(emw.Logger())
 
-	config := cache.ProvidedCacheConfig{
+	config := cache.StoreMiddlewareConfig{
 		Store: cache.NewInMemoryStore(time.Second*5, time.Second),
 	}
 
-	r.Use(cache.ProvidedCacheWithConfig(config))
+	r.Use(cache.StoreMiddlewareWithConfig(config))
 
 	r.GET("/ping", func(c echo.Context) error {
-		store := c.Get(cache.DefaultCacheContextKey).(*cache.InMemoryStore)
+		store := c.Get(cache.DefaultStoreContextKey).(*cache.InMemoryStore)
 		key := c.QueryString()
 
 		var cachedValue string

@@ -13,11 +13,11 @@ func main() {
 	r := echo.New()
 	r.Use(emw.Logger())
 
-	config := cache.ResponseCacheConfig{
+	config := cache.CacheMiddlewareConfig{
 		Store: cache.NewInMemoryStore(time.Second*5, time.Second),
 	}
 
-	r.Use(cache.ResponseCacheWithConfig(config))
+	r.Use(cache.CacheMiddlewareWithConfig(config))
 
 	r.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "pong")
