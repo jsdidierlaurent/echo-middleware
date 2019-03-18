@@ -1,9 +1,10 @@
 package cache
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"time"
+
+	"github.com/labstack/echo/v4"
 )
 
 type (
@@ -44,7 +45,10 @@ func (w *cachedWriter) Write(data []byte) (int, error) {
 	ret, err := w.writer.Write(data)
 	if err == nil {
 		header := w.response.Header()
-		// TODO : Add cache Header
+
+		// Add cache Header
+		currentTime := time.Now()
+		header.Add("Last-Modified", currentTime.Format(time.RFC1123))
 
 		val := responseCache{
 			w.response.Status,

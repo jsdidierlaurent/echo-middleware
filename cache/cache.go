@@ -64,6 +64,13 @@ var (
 	//defaultStore used by Default config
 	defaultStore = NewInMemoryStore(time.Minute*10, time.Second*30)
 
+	//defaultSkiper skip cache if header Cache-Control=no-cache
+	defaultSkipper = func(context echo.Context) bool {
+		// Skip cache if Cache-Controle is set to no-cache
+		//return context.Request().Header.Get("Cache-Control") == "no-cache"
+		return false
+	}
+
 	//DefaultConfig used by default if you don't specifies Config or value inside Config
 	DefaultStoreMiddlewareConfig = StoreMiddlewareConfig{
 		Store:      defaultStore,
@@ -73,7 +80,7 @@ var (
 	DefaultCacheMiddlewareConfig = CacheMiddlewareConfig{
 		Store:     defaultStore,
 		KeyPrefix: DefaultCachePrefix,
-		Skipper:   emw.DefaultSkipper,
+		Skipper:   defaultSkipper,
 		Expire:    DEFAULT,
 	}
 
@@ -145,12 +152,12 @@ func CacheMiddlewareWithConfig(config CacheMiddlewareConfig) echo.MiddlewareFunc
 				c.Response().Writer = writer
 				return next(c)
 			} else {
-				c.Response().WriteHeader(cache.status)
 				for k, vals := range cache.header {
 					for _, v := range vals {
 						c.Response().Header().Add(k, v)
 					}
 				}
+				c.Response().WriteHeader(cache.status)
 				_, _ = c.Response().Write(cache.data)
 				return nil
 			}
@@ -195,12 +202,12 @@ func CacheHandlerWithConfig(config CacheMiddlewareConfig, handle echo.HandlerFun
 			c.Response().Writer = writer
 			return handle(c)
 		} else {
-			c.Response().WriteHeader(cache.status)
 			for k, vals := range cache.header {
 				for _, v := range vals {
 					c.Response().Header().Add(k, v)
 				}
 			}
+			c.Response().WriteHeader(cache.status)
 			_, _ = c.Response().Write(cache.data)
 			return nil
 		}
