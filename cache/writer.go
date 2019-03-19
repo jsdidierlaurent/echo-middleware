@@ -55,10 +55,7 @@ func (w *cachedWriter) Write(data []byte) (int, error) {
 			header,
 			data,
 		}
-		err = w.store.Set(w.key, val, w.expire)
-		if err != nil {
-			// TODO : Log
-		}
+		_ = w.store.Set(w.key, val, w.expire)
 	}
 	return ret, err
 }
