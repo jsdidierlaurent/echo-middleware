@@ -3,6 +3,7 @@ module github.com/jsdidierlaurent/echo-middleware
 go 1.11.5
 
 require (
+	github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/labstack/echo/v4 v4.0.0
 	github.com/mattn/go-colorable v0.1.1 // indirect

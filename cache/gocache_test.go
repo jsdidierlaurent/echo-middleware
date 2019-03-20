@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-var newGoCacheStore = func(_ *testing.T, defaultExpiration time.Duration, cleanupInterval time.Duration) Store {
-	return NewGoCacheStore(defaultExpiration, cleanupInterval)
+var newGoCacheStore = func(_ *testing.T, defaultExpiration time.Duration) Store {
+	return NewGoCacheStore(defaultExpiration, time.Second)
 }
 
 func TestGoCacheCache_TypicalGetSet(t *testing.T) {

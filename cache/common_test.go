@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type cacheFactory func(*testing.T, time.Duration, time.Duration) Store
+type cacheFactory func(*testing.T, time.Duration) Store
 
 // Test typical cache interactions
 func typicalGetSet(t *testing.T, newCache cacheFactory) {
-	cache := newCache(t, time.Hour, time.Minute*10)
+	cache := newCache(t, time.Hour)
 
 	set, get := "foo", ""
 
@@ -24,7 +24,7 @@ func typicalGetSet(t *testing.T, newCache cacheFactory) {
 
 // Test the increment-decrement cases
 func incrDecr(t *testing.T, newCache cacheFactory) {
-	cache := newCache(t, time.Hour, time.Minute*10)
+	cache := newCache(t, time.Hour)
 
 	// Normal increment / decrement operation.
 	assert.NoError(t, cache.Set("int", 10, DEFAULT))
@@ -50,7 +50,7 @@ func incrDecr(t *testing.T, newCache cacheFactory) {
 
 func expiration(t *testing.T, newCache cacheFactory) {
 	// memcached does not support expiration times less than 1 second.
-	cache := newCache(t, time.Second, time.Second)
+	cache := newCache(t, time.Second)
 
 	// Speed up this test
 	var wg sync.WaitGroup
@@ -95,7 +95,7 @@ func expiration(t *testing.T, newCache cacheFactory) {
 
 func emptyCache(t *testing.T, newCache cacheFactory) {
 	var err error
-	cache := newCache(t, time.Hour, time.Minute*10)
+	cache := newCache(t, time.Hour)
 
 	err = cache.Get("notexist", 0)
 	assert.Equal(t, ErrCacheMiss, err)
@@ -112,7 +112,7 @@ func emptyCache(t *testing.T, newCache cacheFactory) {
 
 func testReplace(t *testing.T, newCache cacheFactory) {
 	var err error
-	cache := newCache(t, time.Hour, time.Minute*10)
+	cache := newCache(t, time.Hour)
 
 	// Replace in an empty cache.
 	err = cache.Replace("notexist", 1, FOREVER)
@@ -140,7 +140,7 @@ func testReplace(t *testing.T, newCache cacheFactory) {
 
 func testAdd(t *testing.T, newCache cacheFactory) {
 	var err error
-	cache := newCache(t, time.Hour, time.Minute*10)
+	cache := newCache(t, time.Hour)
 
 	// Add to an empty cache.
 	err = cache.Add("int", 1, time.Second)
