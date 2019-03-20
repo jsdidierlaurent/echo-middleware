@@ -25,7 +25,7 @@ const (
 type (
 	//StoreMiddlewareConfig Struct for Configure StoreMiddleware
 	StoreMiddlewareConfig struct {
-		//Store defines which type of cache you use (Default: inmemory).
+		//Store defines which type of cache you use (Default: gocache).
 		Store Store
 
 		//ContextKey defines the name you use to get the store from echo.Context (Default: cache.DefaultCacheContextKey).
@@ -34,7 +34,7 @@ type (
 
 	//CacheMiddlewareConfig Struct for Configure CacheMiddleware
 	CacheMiddlewareConfig struct {
-		//Store defines which type of cache you use (Default: inmemory).
+		//Store defines which type of cache you use (Default: gocache).
 		Store Store
 
 		//KeyPrefix default cache key prefix used for stored responses (Default: cache.DefaultResponseCachePrefix).
@@ -47,7 +47,7 @@ type (
 		Expire time.Duration
 	}
 
-	//CacheStore Interface for every Cache (InMemory, GCache, ...)
+	//CacheStore Interface for every Cache (GoCache, Redis, ...)
 	Store interface {
 		Get(key string, value interface{}) error
 		Set(key string, value interface{}, expire time.Duration) error
@@ -62,7 +62,7 @@ type (
 
 var (
 	//defaultStore used by Default config
-	defaultStore = NewInMemoryStore(time.Minute*10, time.Second*30)
+	defaultStore = NewGoCacheStore(time.Minute*10, time.Second*30)
 
 	//defaultSkiper skip cache if header Cache-Control=no-cache
 	defaultSkipper = func(context echo.Context) bool {

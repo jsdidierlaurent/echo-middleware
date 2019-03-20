@@ -14,7 +14,7 @@ func main() {
 	r.Use(emw.Logger())
 
 	config := cache.CacheMiddlewareConfig{
-		Store: cache.NewInMemoryStore(time.Second*5, time.Second),
+		Store: cache.NewGoCacheStore(time.Second*5, time.Second),
 	}
 
 	r.Use(cache.CacheMiddlewareWithConfig(config))
