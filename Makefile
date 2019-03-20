@@ -11,6 +11,8 @@ DEFAULT: help
 .PHONY: all test clean install update help
 all: clean test
 test: ## Running tests
+	@echo Starting Redis / Memcache
+
 	@echo Runing all tests ...
 	@$(GOTEST) `$(GOLIST) ./... | grep -v example`
 
