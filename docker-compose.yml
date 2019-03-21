@@ -1,0 +1,18 @@
+# Starting services for running tests
+#
+# Redis for testing redis cache middleware
+# Memcached for testing memcached middleware
+
+version: '3.1'
+
+services:
+
+  redis:
+    image: redis:5.0.4-alpine
+    ports:
+      - "6379:6379"
+
+  memcached:
+    image: memcached:1.5.12-alpine
+    ports:
+      - "11211:11211"

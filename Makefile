@@ -1,24 +1,8 @@
-# Go parameters
-GOCMD=go
-GOCLEAN=$(GOCMD) clean
-GOTEST=$(GOCMD) test
-GOLIST=$(GOCMD) list
-GOMOD=$(GOCMD) mod
-GOGET=$(GOCMD) get -u
-
 DEFAULT: help
 
-.PHONY: all test clean install update help
-all: clean test
+.PHONY: test install update help
 test: ## Running tests
-	@echo Starting Redis / Memcache
-
-	@echo Runing all tests ...
-	@$(GOTEST) `$(GOLIST) ./... | grep -v example`
-
-clean: ## Clean test cache
-	@echo Cleaning tests cache ...
-	@$(GOCLEAN) -testcache `$(GOLIST) ./... | grep -v example`
+	@./scripts/run-tests.sh
 
 install: ## Install deps in local cache
 	@echo Installing deps in local cache ...
