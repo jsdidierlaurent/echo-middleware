@@ -67,8 +67,7 @@ var (
 	//defaultSkiper skip cache if header Cache-Control=no-cache
 	defaultSkipper = func(context echo.Context) bool {
 		// Skip cache if Cache-Controle is set to no-cache
-		//return context.Request().Header.Get("Cache-Control") == "no-cache"
-		return false
+		return context.Request().Header.Get("Cache-Control") == "no-cache"
 	}
 
 	//DefaultConfig used by default if you don't specifies Config or value inside Config
