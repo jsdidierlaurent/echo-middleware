@@ -153,7 +153,9 @@ func CacheMiddlewareWithConfig(config CacheMiddlewareConfig) echo.MiddlewareFunc
 			} else {
 				for k, vals := range cache.header {
 					for _, v := range vals {
-						c.Response().Header().Add(k, v)
+						if c.Response().Header().Get(k) == "" {
+							c.Response().Header().Add(k, v)
+						}
 					}
 				}
 				c.Response().WriteHeader(cache.status)
@@ -203,7 +205,9 @@ func CacheHandlerWithConfig(config CacheMiddlewareConfig, handle echo.HandlerFun
 		} else {
 			for k, vals := range cache.header {
 				for _, v := range vals {
-					c.Response().Header().Add(k, v)
+					if c.Response().Header().Get(k) == "" {
+						c.Response().Header().Add(k, v)
+					}
 				}
 			}
 			c.Response().WriteHeader(cache.status)
