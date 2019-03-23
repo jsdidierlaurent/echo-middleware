@@ -1,0 +1,2 @@
+cache/*.go linguist-vendored=false
+cache/example/*.go linguist-vendored=false
