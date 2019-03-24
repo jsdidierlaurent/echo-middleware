@@ -59,7 +59,7 @@ func (c *MemcachedStore) invoke(storeFn func(*memcache.Client, *memcache.Item) e
 	switch expire {
 	case DEFAULT:
 		expire = c.defaultExpiration
-	case FOREVER:
+	case NEVER:
 		expire = time.Duration(0)
 	}
 

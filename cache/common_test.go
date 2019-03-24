@@ -84,7 +84,7 @@ func expiration(t *testing.T, newCache cacheFactory) {
 	parallel(&wg, func() {
 		// Test Set w/ forever.
 		set, get := 10, 0
-		assert.NoError(t, cache.Set("int4", set, FOREVER))
+		assert.NoError(t, cache.Set("int4", set, NEVER))
 		time.Sleep(2 * time.Second)
 		assert.NoError(t, cache.Get("int4", &get))
 		assert.Equal(t, set, get)
@@ -115,7 +115,7 @@ func testReplace(t *testing.T, newCache cacheFactory) {
 	cache := newCache(t, time.Hour)
 
 	// Replace in an empty cache.
-	err = cache.Replace("notexist", 1, FOREVER)
+	err = cache.Replace("notexist", 1, NEVER)
 	assert.Equal(t, ErrNotStored, err)
 
 	// Set a value of 1, and replace it with 2

@@ -18,8 +18,8 @@ const (
 
 	//DEFAULT Duration use Duration passed in Store constructor
 	DEFAULT = time.Duration(0)
-	//FOREVER Duration never remove value of the cache
-	FOREVER = time.Duration(-1)
+	//NEVER Duration never remove value of the cache
+	NEVER = time.Duration(-1)
 )
 
 type (

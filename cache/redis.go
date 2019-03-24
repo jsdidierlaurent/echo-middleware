@@ -168,7 +168,7 @@ func (c *RedisStore) invoke(f func(string, ...interface{}) (interface{}, error),
 	switch expires {
 	case DEFAULT:
 		expires = c.defaultExpiration
-	case FOREVER:
+	case NEVER:
 		expires = time.Duration(0)
 	}
 
