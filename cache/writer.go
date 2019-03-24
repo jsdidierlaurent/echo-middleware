@@ -8,10 +8,10 @@ import (
 )
 
 type (
-	responseCache struct {
-		status int
-		header http.Header
-		data   []byte
+	ResponseCache struct {
+		Status int
+		Header http.Header
+		Data   []byte
 	}
 
 	cachedWriter struct {
@@ -50,7 +50,7 @@ func (w *cachedWriter) Write(data []byte) (int, error) {
 		currentTime := time.Now()
 		header.Add("Last-Modified", currentTime.Format(time.RFC1123))
 
-		val := responseCache{
+		val := ResponseCache{
 			w.response.Status,
 			header,
 			data,

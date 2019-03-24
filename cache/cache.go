@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"errors"
 	"io"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -64,7 +65,7 @@ var (
 	//defaultStore used by Default config
 	defaultStore = NewGoCacheStore(time.Minute*10, time.Second*30)
 
-	//defaultSkiper skip cache if header Cache-Control=no-cache
+	//defaultSkiper skip cache if Header Cache-Control=no-cache
 	defaultSkipper = func(context echo.Context) bool {
 		// Skip cache if Cache-Controle is set to no-cache
 		return context.Request().Header.Get("Cache-Control") == "no-cache"
@@ -142,8 +143,8 @@ func CacheMiddlewareWithConfig(config CacheMiddlewareConfig) echo.MiddlewareFunc
 				return next(c)
 			}
 
-			var cache responseCache
-			key := getKey(config.KeyPrefix, c.Request().RequestURI)
+			var cache ResponseCache
+			key := GetKey(config.KeyPrefix, c.Request())
 
 			if err := config.Store.Get(key, &cache); err != nil {
 				// Inject Wrapped Writer
@@ -151,15 +152,15 @@ func CacheMiddlewareWithConfig(config CacheMiddlewareConfig) echo.MiddlewareFunc
 				c.Response().Writer = writer
 				return next(c)
 			} else {
-				for k, vals := range cache.header {
+				for k, vals := range cache.Header {
 					for _, v := range vals {
 						if c.Response().Header().Get(k) == "" {
 							c.Response().Header().Add(k, v)
 						}
 					}
 				}
-				c.Response().WriteHeader(cache.status)
-				_, _ = c.Response().Write(cache.data)
+				c.Response().WriteHeader(cache.Status)
+				_, _ = c.Response().Write(cache.Data)
 				return nil
 			}
 		}
@@ -194,8 +195,8 @@ func CacheHandlerWithConfig(config CacheMiddlewareConfig, handle echo.HandlerFun
 			return handle(c)
 		}
 
-		var cache responseCache
-		key := getKey(config.KeyPrefix, c.Request().RequestURI)
+		var cache ResponseCache
+		key := GetKey(config.KeyPrefix, c.Request())
 
 		if err := config.Store.Get(key, &cache); err != nil {
 			// Inject Wrapped Writer
@@ -203,28 +204,29 @@ func CacheHandlerWithConfig(config CacheMiddlewareConfig, handle echo.HandlerFun
 			c.Response().Writer = writer
 			return handle(c)
 		} else {
-			for k, vals := range cache.header {
+			for k, vals := range cache.Header {
 				for _, v := range vals {
 					if c.Response().Header().Get(k) == "" {
 						c.Response().Header().Add(k, v)
 					}
 				}
 			}
-			c.Response().WriteHeader(cache.status)
-			_, _ = c.Response().Write(cache.data)
+			c.Response().WriteHeader(cache.Status)
+			_, _ = c.Response().Write(cache.Data)
 			return nil
 		}
 	}
 }
 
-// getKey build unique key by route with queryParams
-func getKey(prefix string, u string) string {
-	key := url.QueryEscape(u)
+// GetKey build unique key by route with queryParams
+func GetKey(prefix string, request *http.Request) string {
+	uri := request.RequestURI
+	key := url.QueryEscape(uri)
 
 	// Hash if necessary
 	if len(key) > 200 {
 		h := sha1.New()
-		_, _ = io.WriteString(h, u)
+		_, _ = io.WriteString(h, uri)
 		key = string(h.Sum(nil))
 	}
 
