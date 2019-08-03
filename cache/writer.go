@@ -53,9 +53,14 @@ func (w *cachedWriter) Write(data []byte) (int, error) {
 		val := ResponseCache{
 			w.response.Status,
 			header,
-			data,
+			copy(data),
 		}
 		_ = w.store.Set(w.key, val, w.expire)
 	}
 	return ret, err
+}
+
+func copy(data []byte) []byte {
+	// See : https://github.com/go101/go101/wiki/How-to-perfectly-clone-a-slice%3F
+	return append(data[:0:0], data...)
 }
