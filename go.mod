@@ -1,6 +1,6 @@
 module github.com/jsdidierlaurent/echo-middleware
 
-go 1.11.5
+go 1.11
 
 require (
 	github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737
